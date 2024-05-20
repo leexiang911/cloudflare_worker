@@ -6,7 +6,7 @@ const prefix = "content"; // 用于标识路由的前缀
 // 获取内容列表
 router.get(`/${prefix}/list`, async (req) => {
   console.log(req);
-  return new Response("Hello, World!", { status: 200 });
+  return new Response("fangwcg", { status: 200 });
   // ...
 });
 

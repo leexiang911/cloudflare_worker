@@ -36,3 +36,20 @@ VALUES
     ('Python', 'Python实战', 'https://www.baidu.com', 'https://www.baidu.com', 'Python实战教程', 'video', 1, 0.0, 1612137600),
     ('Java', 'Java实战', 'https://www.baidu.com', 'https://www.baidu.com', 'Java实战教程', 'video', 1, 0.0, 1612137600),
     ('C++', 'C++实战', 'https://www.baidu.com', 'https://www.baidu.com', 'C++实战教程', 'video', 1, 0.0, 1612137600);
+
+
+-- 创建一个用户表
+DROP TABLE IF EXISTS User;
+CREATE TABLE IF NOT EXISTS User(
+    id INTEGER PRIMARY KEY,
+    username TEXT NOT NULL,
+    password TEXT NOT NULL,
+    email TEXT,
+    phone TEXT,
+    create_time INTEGER
+);
+-- 插入两个用户
+INSERT INTO User (username, password, email, phone, create_time)
+VALUES 
+    ('user1', 'user1', 'abcdefg@gmail.com', '12345678901', 1612137600),
+    ('user2', 'user2', 'adjkajlfakljf@qq.com','kajdfkajfdakjdfk', 1612137600);

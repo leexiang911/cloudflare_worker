@@ -10,6 +10,8 @@ import collectionRouter from './collection'
 import interactionRouter from './interaction'
 // 支付
 import payRouter from './payment'
+// 管理员
+import adminRouter from './admin'
 
 
 // 导出路由
@@ -19,5 +21,6 @@ export default {
     contentRouter,
     collectionRouter,
     interactionRouter,
-    payRouter
+    payRouter,
+    adminRouter
 }

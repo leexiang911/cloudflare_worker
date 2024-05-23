@@ -10,13 +10,20 @@
  *
  * Learn more at https://developers.cloudflare.com/workers/
  */
+export interface Env {
+	// If you set another name in wrangler.toml as the value for 'binding',
+	// replace "DB" with the variable name you defined.
+	DB: D1Database;
+}
 import ApiRouter from './routes/api';
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		const url = new URL(request.url);
 		const path = url.pathname;
-		
+
+		const { results } = await env.DB.prepare('SELECT * FROM Contents').all();
+		return Response.json(results);
 		if (path.startsWith('/content/')) {
 			return ApiRouter.contentRouter.handle(request, env, ctx);
 		}

@@ -29,6 +29,9 @@ export default {
 		if(path.startsWith('/auth/')){
 			return ApiRouter.authRouter.handle(request, env, ctx);
 		}
+		if(path.startsWith('/verification_code/')){
+			return ApiRouter.verificationCodeRouter.handle(request, env, ctx);
+		}
 		// await sendEmail();
 		return new Response('Hello World!');
 	},

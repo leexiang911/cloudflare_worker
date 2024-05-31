@@ -37,8 +37,11 @@ export namespace VerificationCodeModel {
 
         // 保存验证码
         async saveVerificationCode(email: string, code: string, purpose: VerificationCodeType['purpose']) {
+            // 发送时间
             const create_time = new Date().toISOString();
-            const expire_time = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+            // 过期时间加5分钟
+            const expire_time = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+
             await this.env.DB.prepare(`INSERT INTO ${this.tableName} (email, code, create_time, expire_time, is_used, purpose) VALUES (?, ?, ?, ?, ?, ?)`)
                 .bind(email, code, create_time, expire_time, 0, purpose).run();
         }

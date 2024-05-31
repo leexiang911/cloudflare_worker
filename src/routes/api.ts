@@ -12,6 +12,8 @@ import interactionRouter from './interaction'
 import payRouter from './payment'
 // 管理员
 import adminRouter from './admin'
+// 验证码
+import verificationCodeRouter from './VerificationCode'
 
 
 // 导出路由
@@ -22,5 +24,6 @@ export default {
     collectionRouter,
     interactionRouter,
     payRouter,
-    adminRouter
+    adminRouter,
+    verificationCodeRouter
 }

@@ -1,13 +1,14 @@
 // 认证路由用于用户登录，注册，注销，绑定邮箱等
 import { Router } from 'itty-router';
+import { sendEmail } from '../utils/sendEmail';
+import AuthModel from '../model/Auth';
 const router = Router();
 const prefix = 'auth'; // 用于标识路由的前缀
 
 // 注册
-router.post(`/${prefix}/register`, async (req) => {
-  console.log(req);
-  return new Response('Hello, World!', { status: 200 });
-  // ...
+router.post(`/${prefix}/register`, async (req, env, ctx) => {
+  
+  
 });
 
 // 登录

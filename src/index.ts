@@ -15,19 +15,21 @@ export interface Env {
 	// replace "DB" with the variable name you defined.
 	DB: D1Database;
 }
+import { Resend } from 'resend';
 import ApiRouter from './routes/api';
-
+import { setCorsHeaders } from './utils/CORS'
+import { sendEmail } from './utils/sendEmail';
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		const url = new URL(request.url);
 		const path = url.pathname;
-
-		const { results } = await env.DB.prepare('SELECT * FROM Contents').all();
-		return Response.json(results);
 		if (path.startsWith('/content/')) {
 			return ApiRouter.contentRouter.handle(request, env, ctx);
 		}
-
+		if(path.startsWith('/auth/')){
+			return ApiRouter.authRouter.handle(request, env, ctx);
+		}
+		// await sendEmail();
 		return new Response('Hello World!');
 	},
 };

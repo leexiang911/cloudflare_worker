@@ -1,3 +1,7 @@
+-- npx wrangler d1 execute prod-d1-tutorial --remote --file=./schema.sql
+
+
+
 -- 创建一个管理员Admin表
 DROP TABLE IF EXISTS Admin;
 CREATE TABLE IF NOT EXISTS Admin(
@@ -41,15 +45,28 @@ VALUES
 -- 创建一个用户表
 DROP TABLE IF EXISTS User;
 CREATE TABLE IF NOT EXISTS User(
-    id INTEGER PRIMARY KEY,
-    username TEXT NOT NULL,
-    password TEXT NOT NULL,
-    email TEXT,
-    phone TEXT,
-    create_time INTEGER
+    id INTEGER PRIMARY KEY,-- 主键
+    username TEXT NOT NULL,-- 用户名
+    password TEXT NOT NULL,-- 密码
+    email TEXT,-- 邮箱
+    phone TEXT,-- 电话
+    wechat_id TEXT,-- 微信号
+    create_time INTEGER-- 创建时间
 );
 -- 插入两个用户
 INSERT INTO User (username, password, email, phone, create_time)
 VALUES 
     ('user1', 'user1', 'abcdefg@gmail.com', '12345678901', 1612137600),
     ('user2', 'user2', 'adjkajlfakljf@qq.com','kajdfkajfdakjdfk', 1612137600);
+
+-- 创建一个验证码表
+DROP TABLE IF EXISTS VerificationCode;
+CREATE TABLE IF NOT EXISTS VerificationCode(
+    id INTEGER PRIMARY KEY, -- 主键 
+    email TEXT NOT NULL, -- 邮箱
+    code TEXT NOT NULL, -- 验证码
+    create_time INTEGER NOT NULL, -- 创建时间
+    expire_time INTEGER NOT NULL,  -- 过期时间
+    is_used INTEGER DEFAULT 0, -- 是否使用 0 未使用 1 已使用
+    purpose TEXT NOT NULL -- 验证码用途 ,register , login , reset_password
+);

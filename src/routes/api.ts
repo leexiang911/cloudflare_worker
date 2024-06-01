@@ -1,5 +1,4 @@
-// 认证路由
-import authRouter from './authentication'
+
 // 用户路由
 import userRouter from './user'
 // 内容路由
@@ -18,7 +17,6 @@ import verificationCodeRouter from './VerificationCode'
 
 // 导出路由
 export default {
-    authRouter,
     userRouter,
     contentRouter,
     collectionRouter,

@@ -26,6 +26,16 @@ export namespace VerificationCodeModel {
 
         // 发送验证码
         async sendVerificationCode(email: string, purpose: VerificationCodeType['purpose']) {
+
+
+            // 先看这个邮箱上个验证码是否过期，如果没有过期，就不发送新的验证码，提示用户操作频繁
+            const is_data = await this.env.DB.prepare(`SELECT * FROM ${this.tableName} WHERE email = ? AND purpose = ? AND is_used = 0 AND expire_time > ?`)
+                .bind(email, purpose, new Date().toISOString()).first();
+
+            if (is_data) {
+                return { code: 400, message: '操作频繁，请稍后再试', data: is_data };
+            }
+
             // 生成验证码
             const code = Math.random().toString(36).slice(-6);
             // 发送验证码

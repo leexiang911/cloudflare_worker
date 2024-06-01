@@ -26,8 +26,8 @@ export default {
 		if (path.startsWith('/content/')) {
 			return ApiRouter.contentRouter.handle(request, env, ctx);
 		}
-		if(path.startsWith('/auth/')){
-			return ApiRouter.authRouter.handle(request, env, ctx);
+		if(path.startsWith('/user/')){
+			return ApiRouter.userRouter.handle(request, env, ctx);
 		}
 		if(path.startsWith('/verification_code/')){
 			return ApiRouter.verificationCodeRouter.handle(request, env, ctx);

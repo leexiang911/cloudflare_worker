@@ -1,5 +1,6 @@
 // 用户模型，用户注册，用户登录，用户信息修改等操作
 import type { IRequest } from "itty-router";
+import { VerificationCodeModel } from './VerificationCode';
 
 
 
@@ -9,6 +10,8 @@ export namespace UserModel {
         id: number;
         username: string;
         password: string;
+        nickname: string | null;
+        avatar: string | null;
         email: string | null;
         phone: string | null;
         wechat_id: string | null;
@@ -34,7 +37,7 @@ export namespace UserModel {
          * @param code 验证码
          * @returns 
          */
-        async register(username: string, password: string, email: string,code:string) {
+        async register(username: string, password: string, email: string, code: string) {
             // 先查询用户名是否被注册
             const is_data = await this.env.DB.prepare(`SELECT * FROM ${this.tableName} WHERE username = ?`)
                 .bind(username).first();
@@ -46,8 +49,39 @@ export namespace UserModel {
             const is_email = await this.env.DB.prepare(`SELECT * FROM ${this.tableName} WHERE email = ?`)
                 .bind(email).first();
             if (is_email) {
-                return { code: 400, message: '邮箱已被注册', data: is_email };
+                return { code: 400, message: '邮箱已被注册', data: null };
             }
+
+            // 查询验证码是否正确
+            const verify_code = await new VerificationCodeModel.VerificationCode(this.req, this.env, this.ctx).verifyVerificationCode(email, code, 'register');
+
+            // 验证码错误 verify_code就是 null
+            if (!verify_code) {
+                return { code: 400, message: '验证码错误' };
+            }
+
+            // 注册用户
+            const create_time = new Date().toISOString();
+            await this.env.DB.prepare(`INSERT INTO ${this.tableName} (username, password, email, create_time) VALUES (?, ?, ?, ?)`)
+                .bind(username, password, email, create_time).run();
+
+            // 改变验证码状态
+            await new VerificationCodeModel.VerificationCode(this.req, this.env, this.ctx).useVerificationCode(verify_code.id);
+
+            return {
+                code: 200, message: '注册成功', data: {
+                    is_data,
+                    is_email,
+                    verify_code
+                }
+            };
+
+        }
+
+        // 查询邮箱注册的用户是否存在，存在就返回这个用户，不存在就返回null
+        async isEmailRegistered(email: string) {
+            return await this.env.DB.prepare(`SELECT * FROM ${this.tableName} WHERE email = ?`)
+                .bind(email).first();
         }
     }
 

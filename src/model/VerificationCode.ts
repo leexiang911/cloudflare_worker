@@ -1,5 +1,6 @@
 import type { IRequest } from "itty-router";
 import { sendEmail } from "../utils/sendEmail";
+import { UserModel } from "./User";
 
 // 创建验证码模型
 export namespace VerificationCodeModel {
@@ -33,8 +34,16 @@ export namespace VerificationCodeModel {
                 .bind(email, purpose, new Date().toISOString()).first();
 
             if (is_data) {
-                return { code: 400, message: '操作频繁，请稍后再试', data: is_data };
+                return { code: 400, message: '操作频繁，请稍后再试', data: null };
             }
+            // 如果是注册账号，先查询邮箱是否被注册
+            if (purpose === 'register') {
+                const is_registered = await new UserModel.User(this.req, this.env, this.ctx).isEmailRegistered(email);
+                if (is_registered) {
+                    return { code: 400, message: '邮箱已被注册', data: null };
+                }
+            }
+            
 
             // 生成验证码
             const code = Math.random().toString(36).slice(-6);
@@ -57,9 +66,9 @@ export namespace VerificationCodeModel {
         }
 
         // 验证验证码
-        async verifyVerificationCode(email: string, code: string, purpose: VerificationCodeType['purpose']) {
+        async verifyVerificationCode(email: string, code: string, purpose: VerificationCodeType['purpose']): Promise<VerificationCodeType | null> {
             const data = await this.env.DB.prepare(`SELECT * FROM ${this.tableName} WHERE email = ? AND code = ? AND purpose = ? AND is_used = 0 AND expire_time > ?`)
-                .bind(email, code, purpose, new Date().toISOString()).run();
+                .bind(email, code, purpose, new Date().toISOString()).first() as VerificationCodeType | null;
             return data;
         }
 

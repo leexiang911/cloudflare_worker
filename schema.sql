@@ -48,6 +48,8 @@ CREATE TABLE IF NOT EXISTS User(
     id INTEGER PRIMARY KEY,-- 主键
     username TEXT NOT NULL,-- 用户名
     password TEXT NOT NULL,-- 密码
+    nickname TEXT,-- 昵称
+    avatar TEXT,-- 头像
     email TEXT,-- 邮箱
     phone TEXT,-- 电话
     wechat_id TEXT,-- 微信号

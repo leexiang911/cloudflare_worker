@@ -1,6 +1,6 @@
-import { CryptUtil } from './crypt'
+import { iv,key,Crypt } from './crypt'
 
-class apiUtils {
+export class apiUtils {
     //   允许跨域的列表
     private static allowOriginList = ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'];
     //   允许跨域请求的方法
@@ -28,10 +28,10 @@ class apiUtils {
 
     //   设置JWT头
     public static async setJWT_header(res: Response, jwt: { data: { id: number, email: string | null }, role: 'admin' | 'user', exp: number }) {
-        const tokenStr = JSON.stringify(jwt);
-        const token = await CryptUtil.encryptData(tokenStr);
+        // const tokenStr = JSON.stringify(jwt);
+        const token = await Crypt.encrypt(JSON.stringify(jwt), key, iv);
         res.headers.set('Authorization', 'Bearer,' + token);
-        return res; ``
+        return res; 
     }
 
     //   验证JWT
@@ -51,7 +51,7 @@ class apiUtils {
             return '401';
         }
         const tokenStr = token.split(',')[1];
-        const jwt = await CryptUtil.decryptData(tokenStr);
+        const jwt = await Crypt.decrypt(tokenStr, key, iv);
         // 解密jwt通过，再将过期时间增加
         const jwtObj = JSON.parse(jwt);
         if (jwtObj.exp < Date.now()) {

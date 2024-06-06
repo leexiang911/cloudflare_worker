@@ -79,9 +79,40 @@ export namespace UserModel {
         }
 
         // 查询邮箱注册的用户是否存在，存在就返回这个用户，不存在就返回null
-        async isEmailRegistered(email: string) {
-            return await this.env.DB.prepare(`SELECT * FROM ${this.tableName} WHERE email = ?`)
+        async isEmailRegistered(email: string): Promise<UserType | null> {
+            return await this.env.DB.prepare(`SELECT id, email FROM ${this.tableName} WHERE email = ?`)
                 .bind(email).first();
+        }
+        // 邮箱登录，邮箱验证码登录
+        async loginByEmail(email: string, code: string): Promise<{ code: 200 | 400, message: string, data: UserType | null }> {
+            // 查询验证码是否正确
+            const verify_code = await new VerificationCodeModel.VerificationCode(this.req, this.env, this.ctx).verifyVerificationCode(email, code, 'login');
+
+            // 验证码错误 verify_code就是 null
+            if (!verify_code) {
+                return { code: 400, message: '验证码错误', data: null };
+            }
+
+            // 查询用户是否存在
+            const user: UserType | null = await this.env.DB.prepare(`SELECT * FROM ${this.tableName} WHERE email = ?`)
+                .bind(email).first();
+
+            if (!user) {
+                return { code: 400, message: '用户不存在', data: null };
+            }
+
+            // 改变验证码状态
+            await new VerificationCodeModel.VerificationCode(this.req, this.env, this.ctx).useVerificationCode(verify_code.id);
+
+            return { code: 200, message: '登录成功', data: user };
+        }
+
+        // 账号密码登录
+        async loginByUsername(username: string, password: string): Promise<UserType | null> {
+            // 查询用户是否存在
+            const user: UserType | null = await this.env.DB.prepare(`SELECT * FROM ${this.tableName} WHERE username = ? AND password = ?`)
+                .bind(username, password).first()
+            return user;
         }
     }
 

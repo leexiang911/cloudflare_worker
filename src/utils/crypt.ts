@@ -1,10 +1,11 @@
 
 // 创建128位的随机字符串
-const iv = new Uint8Array([237, 127, 1, 68, 168, 213, 222, 12, 234, 171, 239, 71, 135, 235, 226, 7]);
-const key = '12dhA+o.56';
+export const iv = new Uint8Array([237, 127, 1, 68, 168, 213, 222, 12, 234, 171, 239, 71, 135, 235, 226, 7]);
+// !密钥16位,固定格式,不可更改,否则会导致解密失败
+export const key = '8888888899999999';
 
 
-class Crypt {
+export namespace Crypt {
     /**
      * 加密数据
      * @param data 
@@ -12,7 +13,7 @@ class Crypt {
      * @param iv 
      * @returns 
      */
-    static async encrypt(data: string, key: string, iv: Uint8Array): Promise<string> {
+   export async function encrypt(data: string, key: string, iv: Uint8Array): Promise<string> {
         const algorithm = { name: 'AES-CBC', iv };
         const encodedData = new TextEncoder().encode(data);
         const cryptoKey = await crypto.subtle.importKey('raw', new TextEncoder().encode(key), { name: 'AES-CBC', length: 128 }, false, [
@@ -31,7 +32,7 @@ class Crypt {
      * @param iv 
      * @returns 
      */
-    static async decrypt(encryptedData: string, key: string, iv: Uint8Array): Promise<string> {
+    export async function decrypt(encryptedData: string, key: string, iv: Uint8Array): Promise<string> {
         const algorithm = { name: 'AES-CBC', iv };
         const encryptedArray = new Uint8Array(encryptedData.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)));
         const cryptoKey = await crypto.subtle.importKey('raw', new TextEncoder().encode(key), { name: 'AES-CBC', length: 128 }, false, [
@@ -48,22 +49,3 @@ class Crypt {
     }
 }
 
-export namespace CryptUtil {
-    /**
-     * 加密数据
-     * @param data 
-     * @returns 
-     */
-    export async function encryptData(data: string) {
-        return Crypt.encrypt(data, key, iv);
-    }
-
-    /**
-     * 解密数据
-     * @param encryptedData 
-     * @returns 
-     */
-    export async function decryptData(encryptedData: string) {
-        return Crypt.decrypt(encryptedData, key, iv);
-    }
-}

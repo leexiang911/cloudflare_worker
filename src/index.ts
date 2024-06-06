@@ -19,6 +19,8 @@ import { Resend } from 'resend';
 import ApiRouter from './routes/api';
 import { setCorsHeaders } from './utils/CORS'
 import { sendEmail } from './utils/sendEmail';
+import { iv,key,Crypt } from './utils/crypt'
+
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		const url = new URL(request.url);
@@ -33,6 +35,7 @@ export default {
 			return ApiRouter.verificationCodeRouter.handle(request, env, ctx);
 		}
 		// await sendEmail();
-		return new Response('Hello World!');
+		const message=await  Crypt.encrypt('hello world',key,iv);
+		return new Response(message +' 加密成功');
 	},
 };
